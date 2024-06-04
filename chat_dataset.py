@@ -12,6 +12,8 @@ import json
 ##   * Starts with <bos> (beginning of sequence)
 ##   * Alternating between "user" and "assistant", a turn starts with "<start_of_turn>{ROLE}" and ends with "<end_of_turn>"
 ##
+## You'll probably need your own script & it might help to use the tokenizer.apply_chat_template() function (see chat.py)
+##
 ## I'd recommend that you split up conversations so they don't go too far over the "max_length". How you do that is up to you.
 ##
 class CustomDataset(Dataset):
