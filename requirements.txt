@@ -1,5 +1,14 @@
-transformers
-peft
-trl
-torch
-bitsandbytes
+## Python version: 3.11.9
+
+transformers==4.41.1
+peft==0.11.1
+trl==0.8.6
+bitsandbytes==0.43.1
+datasets==2.19.1
+
+# Note that this will fail if you use Python 3.12
+# But if you install a newer version of torch (on windows), you get:
+#   "UserWarning: 1Torch was not compiled with flash attention."
+# Because for some reason torch isn't using FlashAttention (idk)
+--find-links https://download.pytorch.org/whl/cu121/torch_stable.html
+torch==2.1.2+cu121

@@ -1,7 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 import torch
-from config import BASE_MODEL_NAME, NEW_MODEL_NAME, QUANTIZATION_CONFIG, SEQUENCE_LENGTH, ACCESS_TOKEN
+from config import BASE_MODEL_NAME, NEW_MODEL_NAME, QUANTIZATION_CONFIG, SEQUENCE_LENGTH, ACCESS_TOKEN, GEMMA_CONFIG
 
 ## Load up the base model
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -13,6 +13,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
         trust_remote_code=True,
         token=ACCESS_TOKEN,
         quantization_config=QUANTIZATION_CONFIG,
+        config=GEMMA_CONFIG
 )
 
 ## Merge the base model with your trained model.

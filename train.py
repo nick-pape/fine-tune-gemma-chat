@@ -1,5 +1,3 @@
-
-
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -12,7 +10,7 @@ from peft import (
 )
 from trl import SFTTrainer
 from chat_dataset import CustomDataset
-from config import BASE_MODEL_NAME, SEQUENCE_LENGTH, DATA_FILE_PATH, NEW_MODEL_NAME, QUANTIZATION_CONFIG, ACCESS_TOKEN
+from config import BASE_MODEL_NAME, SEQUENCE_LENGTH, DATA_FILE_PATH, NEW_MODEL_NAME, QUANTIZATION_CONFIG, ACCESS_TOKEN, GEMMA_CONFIG
 
 ## Load up the tokenizer (which converts words/word parts into indices in a dictionary)
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, token=ACCESS_TOKEN)
@@ -24,15 +22,16 @@ tokenizer.add_eos_token = True
 dataset = CustomDataset(DATA_FILE_PATH, tokenizer, SEQUENCE_LENGTH)
 
 ## Alternately, use this role-play dataset:
-#
-# dataset_name = "hieunguyenminh/roleplay"
-# dataset = load_dataset(dataset_name, split="train[0:1000]")
+#from datasets import load_dataset
+#dataset_name = "hieunguyenminh/roleplay"
+#dataset = load_dataset(dataset_name, split="train[0:1000]")
 
 ## Load up the model using HuggingFace magic libraries.
 ## Automatically sent to GPU.
 ## (btw check "torch.cuda.is_available()" to make sure GPU is working)
 model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL_NAME,
+    config=GEMMA_CONFIG,
     quantization_config=QUANTIZATION_CONFIG,
     device_map="auto",
     token=ACCESS_TOKEN
@@ -76,7 +75,9 @@ training_arguments = TrainingArguments(
     logging_steps=100,
     fp16=False,
     bf16=False,
-    group_by_length=True
+    group_by_length=True,
+    gradient_checkpointing=True,
+    gradient_checkpointing_kwargs={'use_reentrant':False}
 )
 
 ## The actual training utility.
