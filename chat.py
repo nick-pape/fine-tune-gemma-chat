@@ -1,12 +1,7 @@
-## After requesting access to the Gemma model here:
-## Get your Hugging Face access token and put it below.
-## (Alternately, remove this variable and usage below and use HF_TOKEN environment variable)
-access_token = "..."
-
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 import torch
-from config import BASE_MODEL_NAME, NEW_MODEL_NAME, QUANTIZATION_CONFIG, SEQUENCE_LENGTH
+from config import BASE_MODEL_NAME, NEW_MODEL_NAME, QUANTIZATION_CONFIG, SEQUENCE_LENGTH, ACCESS_TOKEN
 
 ## Load up the base model
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -16,7 +11,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
         torch_dtype=torch.float16,
         device_map="auto",
         trust_remote_code=True,
-        token=access_token,
+        token=ACCESS_TOKEN,
         quantization_config=QUANTIZATION_CONFIG,
 )
 
@@ -24,7 +19,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
 model = PeftModel.from_pretrained(base_model, './'+NEW_MODEL_NAME)
 
 ## Load up the base tokenizer, note we don't add EOS automatically here since we are generating.
-tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, model_max_length=SEQUENCE_LENGTH)
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, model_max_length=SEQUENCE_LENGTH, token=ACCESS_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 

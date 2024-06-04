@@ -1,3 +1,8 @@
+## After requesting access to the Gemma model here:
+## Get your Hugging Face access token and put it below.
+## (Alternately, remove this variable and usage below and use HF_TOKEN environment variable)
+access_token = "..."
+
 ## The name of the base model. For gemma chat scenarios, stick with "gemma-7b-it" or "gemma-2b-it".
 BASE_MODEL_NAME = "google/gemma-7b-it"
 ## The name of the model you are creating. A folder will be created with the model after training.

@@ -1,7 +1,4 @@
-## After requesting access to the Gemma model here:
-## Get your Hugging Face access token and put it below.
-## (Alternately, remove this variable and usage below and use HF_TOKEN environment variable)
-access_token = "..."
+
 
 from transformers import (
     AutoModelForCausalLM,
@@ -15,16 +12,21 @@ from peft import (
 )
 from trl import SFTTrainer
 from chat_dataset import CustomDataset
-from config import BASE_MODEL_NAME, SEQUENCE_LENGTH, DATA_FILE_PATH, NEW_MODEL_NAME, QUANTIZATION_CONFIG
+from config import BASE_MODEL_NAME, SEQUENCE_LENGTH, DATA_FILE_PATH, NEW_MODEL_NAME, QUANTIZATION_CONFIG, ACCESS_TOKEN
 
 ## Load up the tokenizer (which converts words/word parts into indices in a dictionary)
-tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, token=access_token)
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, token=ACCESS_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 tokenizer.add_eos_token = True
 
 ## Load up your JSON blob
 dataset = CustomDataset(DATA_FILE_PATH, tokenizer, SEQUENCE_LENGTH)
+
+## Alternately, use this role-play dataset:
+#
+# dataset_name = "hieunguyenminh/roleplay"
+# dataset = load_dataset(dataset_name, split="train[0:1000]")
 
 ## Load up the model using HuggingFace magic libraries.
 ## Automatically sent to GPU.
@@ -33,7 +35,7 @@ model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL_NAME,
     quantization_config=QUANTIZATION_CONFIG,
     device_map="auto",
-    token=access_token
+    token=ACCESS_TOKEN
 )
 
 ## Some random settings for training. I don't really know what they do.
