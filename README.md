@@ -2,8 +2,10 @@
 
 ## Setup
 1. Install python 3.11
-    * Note: don't use 3.12, otherwise you will get a warning about FlashAttention not being compiled. It's stupid,
-    but I set it up this way because I know how you feel about warnings.
+    * > Note: if you use python 3.12, you will need to update torch to 2.3.0 in `requirements.txt`.
+      If you do this, you will get a warning about FlashAttention. I know you hate warnings so I downgraded
+      to a version of torch that has FlashAttention.
+    * > Note: this only applies to Windows. On Max/Linux, you should update python and torch to latest.
 1. Ensure you have CUDA drivers
     * You'll need the right version for your GPU. And you may need to update `requirements.txt` with the torch cuda version.
         * 12.1 is the latest I've been using (RTX 3090)

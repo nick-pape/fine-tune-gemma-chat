@@ -21,11 +21,6 @@ tokenizer.add_eos_token = True
 ## Load up your JSON blob
 dataset = CustomDataset(DATA_FILE_PATH, tokenizer, SEQUENCE_LENGTH)
 
-## Alternately, use this role-play dataset:
-#from datasets import load_dataset
-#dataset_name = "hieunguyenminh/roleplay"
-#dataset = load_dataset(dataset_name, split="train[0:1000]")
-
 ## Load up the model using HuggingFace magic libraries.
 ## Automatically sent to GPU.
 ## (btw check "torch.cuda.is_available()" to make sure GPU is working)
@@ -33,6 +28,7 @@ model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL_NAME,
     config=GEMMA_CONFIG,
     quantization_config=QUANTIZATION_CONFIG,
+    low_cpu_mem_usage=True,
     device_map="auto",
     token=ACCESS_TOKEN
 )
@@ -66,7 +62,7 @@ model = get_peft_model(model, peft_config)
 training_arguments = TrainingArguments(
     learning_rate=2e-4,
     num_train_epochs=1,
-    output_dir="./"+NEW_MODEL_NAME,
+    output_dir="./models/"+NEW_MODEL_NAME,
     per_device_train_batch_size=2,
     gradient_accumulation_steps=1,
     optim="paged_adamw_32bit",
@@ -94,4 +90,4 @@ trainer = SFTTrainer(
 
 ## Do the training!! This could take some time :). Model saved to disk afterwards.
 trainer.train()
-trainer.model.save_pretrained(NEW_MODEL_NAME)
+trainer.model.save_pretrained('./models/' + NEW_MODEL_NAME)

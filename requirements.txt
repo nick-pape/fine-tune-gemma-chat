@@ -6,9 +6,9 @@ trl==0.8.6
 bitsandbytes==0.43.1
 datasets==2.19.1
 
-# Note that this will fail if you use Python 3.12
-# But if you install a newer version of torch (on windows), you get:
+# Note, latest version of torch (2.3.0) doesn't come with FA2, so you get:
 #   "UserWarning: 1Torch was not compiled with flash attention."
-# Because for some reason torch isn't using FlashAttention (idk)
+# Since I know you hate warnings, I downgraded python and torch so this warning doesn't occur.
+# If you use python 3.12, you can change below to 2.3.0, but you will see warning.
 --find-links https://download.pytorch.org/whl/cu121/torch_stable.html
 torch==2.1.2+cu121

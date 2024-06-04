@@ -2,6 +2,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 import torch
 from config import BASE_MODEL_NAME, NEW_MODEL_NAME, QUANTIZATION_CONFIG, SEQUENCE_LENGTH, ACCESS_TOKEN, GEMMA_CONFIG
+from chat_history import ChatHistory
 
 ## Load up the base model
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -17,33 +18,14 @@ base_model = AutoModelForCausalLM.from_pretrained(
 )
 
 ## Merge the base model with your trained model.
-model = PeftModel.from_pretrained(base_model, './'+NEW_MODEL_NAME)
+model = PeftModel.from_pretrained(base_model, './models/'+NEW_MODEL_NAME)
 
 ## Load up the base tokenizer, note we don't add EOS automatically here since we are generating.
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, model_max_length=SEQUENCE_LENGTH, token=ACCESS_TOKEN)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 
-## Chat history helper class.
-class ChatHistory:
-    def __init__(self):
-        self.__messages = []
-
-    def add_user_message(self, message):
-        self.__messages.append({"role": "user", "content": message})
-    
-    def add_bot_message(self, message):
-        self.__messages.append({"role": "assistant", "content": message})
-
-    def to_chat_format(self):
-        return tokenizer.apply_chat_template(self.__messages, tokenize=False, add_generation_prompt=True)
-
-    def tokenize(self, tokenizer):
-        prompt = self.to_chat_format()
-        return tokenizer(prompt, return_tensors='pt', padding=True, truncation=True, max_length=SEQUENCE_LENGTH).to("cuda")
-         
-
-history = ChatHistory()
+history = ChatHistory(tokenizer)
 
 while True:
     history.add_user_message(input("You: "))
