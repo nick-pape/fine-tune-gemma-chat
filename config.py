@@ -1,5 +1,5 @@
-## After requesting access to the Gemma model here:
-## Get your Hugging Face access token and put it below.
+## After requesting access to the Gemma model here: https://huggingface.co/google/gemma-7b-it
+## Get your Hugging Face access token and put it below: https://huggingface.co/settings/tokens
 ## (Alternately, remove this variable and usage below and use HF_TOKEN environment variable)
 access_token = "..."
 
