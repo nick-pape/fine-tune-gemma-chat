@@ -1,4 +1,4 @@
-from constants import SEQUENCE_LENGTH
+from config import SEQUENCE_LENGTH
 
 ## Chat history helper class.
 class ChatHistory:

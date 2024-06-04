@@ -1,10 +1,15 @@
 ## Python version: 3.11.9
 
-transformers==4.41.1
+transformers==4.40.2
 peft==0.11.1
 trl==0.8.6
 bitsandbytes==0.43.1
 datasets==2.19.1
+
+## There is an annoying deprecation warning that hasn't been fixed in PEFT
+## so downgrade huggingface-hub to a version that hasn't deprecated it.
+##   FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0.
+huggingface-hub<0.23.0
 
 # Note, latest version of torch (2.3.0) doesn't come with FA2, so you get:
 #   "UserWarning: 1Torch was not compiled with flash attention."

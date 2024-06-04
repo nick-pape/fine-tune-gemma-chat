@@ -1,14 +1,15 @@
 ## After requesting access to the Gemma model here: https://huggingface.co/google/gemma-7b-it
 ## Get your Hugging Face access token and put it below: https://huggingface.co/settings/tokens
-## (Alternately, remove this variable and usage below and use HF_TOKEN environment variable)
-access_token = "..."
+## (Alternately, remove this and use HF_TOKEN environment variable)
+import os
+os.environ["HF_TOKEN"] = "..."
 
 ## The name of the base model. For gemma chat scenarios, stick with "gemma-7b-it" or "gemma-2b-it".
-BASE_MODEL_NAME = "google/gemma-7b-it"
+BASE_MODEL_NAME = "google/gemma-2b-it"
 ## The name of the model you are creating. A folder will be created with the model after training.
 NEW_MODEL_NAME = "pete-bot"
 ## The path to your training data (see "chat_dataset.py")
-DATA_FILE_PATH = "data.json"
+DATA_FILE_PATH = "./example_data.json"
 ## The maximum sequence length to do training on (in tokens). I've been using 512 and 1024, but you can go larger.
 SEQUENCE_LENGTH = 1024
 
@@ -29,3 +30,7 @@ QUANTIZATION_CONFIG = BitsAndBytesConfig(
     bnb_4bit_compute_dtype=torch.bfloat16,
     bnb_4bit_use_double_quant=True,
 )
+
+from transformers import AutoConfig
+GEMMA_CONFIG = AutoConfig.from_pretrained(BASE_MODEL_NAME, resume_download=None)
+GEMMA_CONFIG.hidden_activation='gelu_pytorch_tanh' ## This setting gets rid of an annoying warning

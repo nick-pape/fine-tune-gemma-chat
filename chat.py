@@ -1,18 +1,16 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 import torch
-from config import BASE_MODEL_NAME, NEW_MODEL_NAME, QUANTIZATION_CONFIG, SEQUENCE_LENGTH, ACCESS_TOKEN, GEMMA_CONFIG
+from config import BASE_MODEL_NAME, NEW_MODEL_NAME, QUANTIZATION_CONFIG, SEQUENCE_LENGTH, GEMMA_CONFIG
 from chat_history import ChatHistory
 
 ## Load up the base model
 base_model = AutoModelForCausalLM.from_pretrained(
         BASE_MODEL_NAME,
-        return_dict=True,
         low_cpu_mem_usage=True,
         torch_dtype=torch.float16,
         device_map="auto",
         trust_remote_code=True,
-        token=ACCESS_TOKEN,
         quantization_config=QUANTIZATION_CONFIG,
         config=GEMMA_CONFIG
 )
@@ -21,7 +19,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
 model = PeftModel.from_pretrained(base_model, './models/'+NEW_MODEL_NAME)
 
 ## Load up the base tokenizer, note we don't add EOS automatically here since we are generating.
-tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, model_max_length=SEQUENCE_LENGTH, token=ACCESS_TOKEN)
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, model_max_length=SEQUENCE_LENGTH)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 

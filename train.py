@@ -10,10 +10,10 @@ from peft import (
 )
 from trl import SFTTrainer
 from chat_dataset import CustomDataset
-from config import BASE_MODEL_NAME, SEQUENCE_LENGTH, DATA_FILE_PATH, NEW_MODEL_NAME, QUANTIZATION_CONFIG, ACCESS_TOKEN, GEMMA_CONFIG
+from config import BASE_MODEL_NAME, SEQUENCE_LENGTH, DATA_FILE_PATH, NEW_MODEL_NAME, QUANTIZATION_CONFIG, GEMMA_CONFIG
 
 ## Load up the tokenizer (which converts words/word parts into indices in a dictionary)
-tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True, token=ACCESS_TOKEN)
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"
 tokenizer.add_eos_token = True
@@ -30,7 +30,7 @@ model = AutoModelForCausalLM.from_pretrained(
     quantization_config=QUANTIZATION_CONFIG,
     low_cpu_mem_usage=True,
     device_map="auto",
-    token=ACCESS_TOKEN
+    resume_download=None
 )
 
 ## Some random settings for training. I don't really know what they do.
@@ -54,6 +54,7 @@ peft_config = LoraConfig(
     target_modules=['o_proj', 'q_proj', 'up_proj', 'v_proj', 'k_proj', 'down_proj', 'gate_proj']
 )
 model = get_peft_model(model, peft_config)
+model.gradient_checkpointing_enable()
 
 ## Arguments for the training utility.
 ## The important ones here are num_train_epochs (the number of times it goes through your training set).
@@ -85,7 +86,7 @@ trainer = SFTTrainer(
     dataset_text_field="text",
     tokenizer=tokenizer,
     args=training_arguments,
-    packing= False,
+    packing=False
 )
 
 ## Do the training!! This could take some time :). Model saved to disk afterwards.
