@@ -1,6 +1,6 @@
 ## Python version: 3.11.9
 
-transformers==4.40.2
+transformers==5.0.0rc3
 peft==0.11.1
 trl==0.8.6
 bitsandbytes==0.43.1
@@ -16,4 +16,4 @@ huggingface-hub<0.23.0
 # Since I know you hate warnings, I downgraded python and torch so this warning doesn't occur.
 # If you use python 3.12, you can change below to 2.3.0, but you will see warning.
 --find-links https://download.pytorch.org/whl/cu121/torch_stable.html
-torch==2.1.2+cu121
+torch==2.8.0
