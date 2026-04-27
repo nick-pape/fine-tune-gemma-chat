@@ -2,17 +2,18 @@
 ## Get your Hugging Face access token and put it below: https://huggingface.co/settings/tokens
 ## (Alternately, remove this and use HF_TOKEN environment variable)
 import os
-os.environ["HF_TOKEN"] = "..."
+os.environ.setdefault("HF_TOKEN", "")  # set HF_TOKEN env var
 
 ## The name of the base model. For gemma chat scenarios, stick with "gemma-7b-it" or "gemma-2b-it".
-BASE_MODEL_NAME = "google/gemma-2b-it"
+BASE_MODEL_NAME = "google/gemma-7b-it"
 ## The name of the model you are creating. A folder will be created with the model after training.
-NEW_MODEL_NAME = "pete-bot"
+NEW_MODEL_NAME = "sh-bot-7-text/checkpoint-2576"
 ## The path to your training data (see "chat_dataset.py")
-DATA_FILE_PATH = "./example_data.json"
+DATA_FILE_PATH = "../data4.json"
 ## The maximum sequence length to do training on (in tokens). I've been using 512 and 1024, but you can go larger.
 SEQUENCE_LENGTH = 1024
 
+USE_GRADIENT_CHECKPOINTING = False
 
 ## This is optional. But basically, we are attempting to "quantize" the model.
 ## Which basically means we reduce the weights from 16 (or 32) bit floats.

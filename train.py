@@ -10,7 +10,7 @@ from peft import (
 )
 from trl import SFTTrainer
 from chat_dataset import CustomDataset
-from config import BASE_MODEL_NAME, SEQUENCE_LENGTH, DATA_FILE_PATH, NEW_MODEL_NAME, QUANTIZATION_CONFIG, GEMMA_CONFIG
+from config import BASE_MODEL_NAME, SEQUENCE_LENGTH, DATA_FILE_PATH, NEW_MODEL_NAME, QUANTIZATION_CONFIG, GEMMA_CONFIG, USE_GRADIENT_CHECKPOINTING
 
 ## Load up the tokenizer (which converts words/word parts into indices in a dictionary)
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True)
@@ -28,7 +28,6 @@ model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL_NAME,
     config=GEMMA_CONFIG,
     quantization_config=QUANTIZATION_CONFIG,
-    low_cpu_mem_usage=True,
     device_map="auto",
     resume_download=None
 )
@@ -54,7 +53,8 @@ peft_config = LoraConfig(
     target_modules=['o_proj', 'q_proj', 'up_proj', 'v_proj', 'k_proj', 'down_proj', 'gate_proj']
 )
 model = get_peft_model(model, peft_config)
-model.gradient_checkpointing_enable()
+if USE_GRADIENT_CHECKPOINTING:
+    model.gradient_checkpointing_enable()
 
 ## Arguments for the training utility.
 ## The important ones here are num_train_epochs (the number of times it goes through your training set).
@@ -62,7 +62,7 @@ model.gradient_checkpointing_enable()
 ## These values worked decently on my training set of ~350 conversations.
 training_arguments = TrainingArguments(
     learning_rate=2e-4,
-    num_train_epochs=1,
+    num_train_epochs=7,
     output_dir="./models/"+NEW_MODEL_NAME,
     per_device_train_batch_size=2,
     gradient_accumulation_steps=1,
@@ -73,7 +73,7 @@ training_arguments = TrainingArguments(
     fp16=False,
     bf16=False,
     group_by_length=True,
-    gradient_checkpointing=True,
+    gradient_checkpointing=USE_GRADIENT_CHECKPOINTING,
     gradient_checkpointing_kwargs={'use_reentrant':False} # this fixes another warning
 )
 

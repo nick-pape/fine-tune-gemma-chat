@@ -1,3 +1,5 @@
+from InquirerPy import prompt
+import os
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 import torch
@@ -7,7 +9,6 @@ from chat_history import ChatHistory
 ## Load up the base model
 base_model = AutoModelForCausalLM.from_pretrained(
         BASE_MODEL_NAME,
-        low_cpu_mem_usage=True,
         torch_dtype=torch.float16,
         device_map="auto",
         trust_remote_code=True,
@@ -27,14 +28,14 @@ history = ChatHistory(tokenizer)
 
 while True:
     history.add_user_message(input("You: "))
-    prompt = history.tokenize(tokenizer)
+    encoded = history.tokenize(tokenizer)
 
     raw_output = model.generate(
-        **prompt,
+        **encoded,
         ## limit the response length, else it could just go on and on and on and on and on and on and.....
-        max_length=SEQUENCE_LENGTH, 
+        max_new_tokens=100, 
         ## we only need one, but you can do more
-        num_return_sequences=1, 
+        num_return_sequences=4, 
         do_sample=True,
         ## this is "beam search", which basically is a forking factor during generation. You can ramp this up, but it adds computation.
         num_beams=4, 
@@ -43,17 +44,33 @@ while True:
         ## tells the beams to stop searching if they hit EOS
         early_stopping=True, 
         ## you can read about these two... but basically they control the number of "possible sequences" during generation.
-        top_k=50, 
+        top_k=100, 
         top_p=0.95,
         ## randomness factor
         temperature=0.7
     )
 
     ## this line will certainly make Pete tear his eyes out.
-    ## but we are taking the first result (since num_return_sequences=1), and, since this includes the prompt,
-    ## we basically lop the prompt off the front. We are relying on `eos_token_id` above to hope these are short.
-    input_token_count = prompt['input_ids'].shape[1]
-    output = tokenizer.decode(raw_output[0][input_token_count:], skip_special_tokens=True)
+    ## but we are taking the first result (since num_return_sequences=1), and, since this includes the encoded,
+    ## we basically lop the encoded off the front. We are relying on `eos_token_id` above to hope these are short.
+    input_token_count = encoded['input_ids'].shape[1]
+    responses = set([tokenizer.decode(i[input_token_count:], skip_special_tokens=True) for i in raw_output])
 
-    print("Model:", output)
-    history.add_bot_message(output)
+    if (len(responses) > 1):
+        questions = [
+            {
+                "type": "list",
+                "name": "selected_response",
+                "message": "Select a response:",
+                "choices": responses
+            }
+        ]
+        answer = prompt(questions)
+        selected = answer['selected_response']
+    else:
+        selected = responses.pop()
+
+    history.add_bot_message(selected)
+
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(history)

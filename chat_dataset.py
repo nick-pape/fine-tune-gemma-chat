@@ -5,12 +5,12 @@ import json
 ## array of objects, the objects have a single conversation in the "text" property, e.g.:
 ##
 ## [
-##   { "text": "<bos><start_of_turn>user Blah Blah Blah<end_of_sequence><start_of_turn>assistant Response Response<end_of_sequence>"}
+##   { "text": "<bos><start_of_turn>user Blah Blah Blah<end_of_sequence><start_of_turn>model Response Response<end_of_sequence>"}
 ## ]
 ##
 ## These conversations should be structured in the "chat template", which is basically:
 ##   * Starts with <bos> (beginning of sequence)
-##   * Alternating between "user" and "assistant", a turn starts with "<start_of_turn>{ROLE}" and ends with "<end_of_turn>"
+##   * Alternating between "user" and "model", a turn starts with "<start_of_turn>{ROLE}" and ends with "<end_of_turn>"
 ##
 ## You'll probably need your own script & it might help to use the tokenizer.apply_chat_template() function (see chat.py)
 ##

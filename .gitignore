@@ -1,2 +1,2 @@
 __pycache__
-models
+models\n# Never commit HF tokens\n.env
